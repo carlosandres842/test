@@ -18,6 +18,8 @@ kind: Deployment
 metadata:
   name: witcash-node
   namespace: witcash
+  annotations:
+    kubernetes.io/change-cause: "first commit"
 spec:
   replicas: 1
   selector:
