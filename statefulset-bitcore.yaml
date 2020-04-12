@@ -23,10 +23,6 @@ spec:
         ports:
         - containerPort: 2332
           protocol: TCP
-        volumeMounts:
-        - name: witcash-node-persistent-storage
-          mountPath: /bitcoin/data
-          subPath: bitcoin_data
         readinessProbe:
           tcpSocket:
             port: 2332
@@ -37,16 +33,16 @@ spec:
             port: 2332
           initialDelaySeconds: 15
           periodSeconds: 20
+        volumeMounts:
+        - name: witcash-node-persistent-storage #bitcore-storage
+          mountPath: /bitcoin/data
+          subPath: bitcoin_data
 
       - name: nbxplorer
         image: witcashnode/bitcoincore:nbxplorer
         ports:
         - containerPort: 24444
           protocol: TCP
-        volumeMounts:
-        - name: witcash-node-persistent-storage
-          mountPath: /NBXplorer/data
-          subPath: nbxplorer_data
         readinessProbe:
           tcpSocket:
             port: 24444
@@ -57,11 +53,20 @@ spec:
             port: 24444
           initialDelaySeconds: 15
           periodSeconds: 20
+        volumeMounts:
+        - name: nbxplorer-storage
+          mountPath: /NBXplorer/data
+          subPath: nbxplorer_data
 
+      volumes:
+      - name: nbxplorer-storage
+        persistentVolumeClaim:
+          claimName: nbxplorer-pvc
+          readOnly: false
 
   volumeClaimTemplates:
   - metadata:
-      name: witcash-node-persistent-storage
+      name: witcash-node-persistent-storage #bitcore-storage
     spec:
       accessModes: [ "ReadWriteOnce" ]
       storageClassName: "standard"
@@ -83,7 +88,3 @@ spec:
     - name: witcash-node
       targetPort: 24444
       port: 24444
-
-
-
-
