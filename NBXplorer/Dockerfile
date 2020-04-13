@@ -9,11 +9,7 @@ RUN cd NBXplorer && dotnet publish -o /app/ -c Release
 
 FROM mcr.microsoft.com/dotnet/core/aspnet:3.1.1-buster-slim
 WORKDIR /NBXplorer
-
 RUN mkdir /NBXplorer/data
 ENV NBXPLORER_DATADIR=/NBXplorer/data
-
 COPY --from=builder "/app" .
-COPY settings.config /NBXplorer/settings.config
 EXPOSE 24444
-CMD dotnet NBXplorer.dll -c /NBXplorer/settings.config --bind 0.0.0.0 --noauth

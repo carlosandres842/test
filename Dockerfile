@@ -1,6 +1,6 @@
-# 1. Base OS Image 
+# Base OS Image 
 FROM debian:buster-slim
-# Update SO and add bitcoin user
+# Update SO 
 RUN apt-get update -y \
   && apt-get install -y curl gnupg gosu \
   && apt-get clean \
@@ -25,8 +25,5 @@ RUN set -ex \
   && rm *.tar.gz *.asc
 
 WORKDIR /bitcoin/data
-# 5. Add client.conf file
-COPY bitcoin.conf /bitcoin/bitcoin.conf
 # 6. CMD
 EXPOSE 2332 8333
-CMD bitcoind -conf=/bitcoin/bitcoin.conf
