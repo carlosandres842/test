@@ -25,5 +25,4 @@ RUN set -ex \
   && rm *.tar.gz *.asc
 
 WORKDIR /bitcoin/data
-# 6. CMD
 EXPOSE 2332 8333
