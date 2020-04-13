@@ -1,0 +1,92 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: witcash-node
+  namespace: witcash
+spec:
+  serviceName: witpay
+  replicas: 2
+  selector:
+    matchLabels:
+      run: witcash-node
+  template:
+    metadata:
+      labels:
+        run: witcash-node
+    spec:
+      imagePullSecrets:
+      - name: bitcore-docker-secret
+
+      containers:
+      - name: bitcore
+        image: witcashnode/bitcoincore:bitcore
+        command: ["sh", "-c", "bitcoind -conf=/bitcoin/bitcoin.conf"]
+        ports:
+        - containerPort: 2332
+          protocol: TCP
+        readinessProbe:
+          tcpSocket:
+            port: 2332
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          tcpSocket:
+            port: 2332
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        volumeMounts:
+        - name: witcash-node-persistent-storage #bitcore-storage
+          mountPath: /bitcoin/data
+          subPath: bitcoin_data
+
+      - name: nbxplorer
+        image: witcashnode/bitcoincore:nbxplorer
+        command: ["sh", "-c", "dotnet NBXplorer.dll -c /NBXplorer/settings.config --bind 0.0.0.0 --noauth"]
+        ports:
+        - containerPort: 24444
+          protocol: TCP
+        readinessProbe:
+          tcpSocket:
+            port: 24444
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          tcpSocket:
+            port: 24444
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        # volumeMounts:
+        # - name: nbxplorer-storage
+        #   mountPath: /NBXplorer/data
+        #   subPath: nbxplorer_data
+
+      # volumes:
+      # - name: nbxplorer-storage
+      #   persistentVolumeClaim:
+      #     claimName: nbxplorer-pvc
+      #     readOnly: false
+
+  volumeClaimTemplates:
+  - metadata:
+      name: witcash-node-persistent-storage #bitcore-storage
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: "standard"
+      resources:
+        requests:
+          storage: 500Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: witcash-node
+  namespace: witcash
+spec:
+  type: LoadBalancer
+  selector:
+    run: witcash-node
+
+  ports:
+    - name: witcash-node
+      targetPort: 24444
+      port: 24444
