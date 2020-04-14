@@ -8,5 +8,7 @@ configMapGenerator:
 - name: nbxplorer-configmap
   files:
   - settings.config
+generatorOptions:
+  disableNameSuffixHash: true
 
 # kubectl apply -k .
