@@ -20,7 +20,7 @@ spec:
       containers:
       - name: bitcore
         image: witcashnode/bitcoincore:bitcore_v1.1
-        command: ["sh", "-c", "bitcoind -conf=/bitcoin/bitcoin.conf"]
+        command: ["sh", "-c", "bitcoind -conf=/bitcoin/config/bitcoin.conf"]
         ports:
         - containerPort: 2332
           protocol: TCP
@@ -35,13 +35,15 @@ spec:
           initialDelaySeconds: 15
           periodSeconds: 20
         volumeMounts:
+        - name: bitcore-config-volume
+          mountPath: /bitcoin/config
         - name: witcash-node-persistent-storage #bitcore-storage
           mountPath: /bitcoin/data
           subPath: bitcoin_data
 
       - name: nbxplorer
         image: witcashnode/bitcoincore:nbxplorer_v1.1
-        command: ["sh", "-c", "dotnet NBXplorer.dll -c /NBXplorer/settings.config --bind 0.0.0.0 --noauth"]
+        command: ["sh", "-c", "dotnet NBXplorer.dll -c /NBXplorer/config/settings.config --bind 0.0.0.0 --noauth"]
         ports:
         - containerPort: 24444
           protocol: TCP
@@ -55,12 +57,20 @@ spec:
             port: 24444
           initialDelaySeconds: 15
           periodSeconds: 20
-        # volumeMounts:
+        volumeMounts:
+        - name: nbxplorer-config-volume
+          mountPath: /NBXplorer/config
         # - name: nbxplorer-storage
         #   mountPath: /NBXplorer/data
         #   subPath: nbxplorer_data
 
-      # volumes:
+      volumes:
+      - name: bitcore-config-volume
+        configMap:
+          name: bitcore-configmap    
+      - name: nbxplorer-config-volume
+        configMap:
+          name: nbxplorer-configmap   
       # - name: nbxplorer-storage
       #   persistentVolumeClaim:
       #     claimName: nbxplorer-pvc
