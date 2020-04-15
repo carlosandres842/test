@@ -37,7 +37,7 @@ spec:
         volumeMounts:
         - name: bitcore-config-volume
           mountPath: /bitcoin/config
-        - name: witcash-node-persistent-storage #bitcore-storage
+        - name: bitcore-storage
           mountPath: /bitcoin/data
           subPath: bitcoin_data
 
@@ -78,7 +78,7 @@ spec:
 
   volumeClaimTemplates:
   - metadata:
-      name: witcash-node-persistent-storage #bitcore-storage
+      name: bitcore-storage
     spec:
       accessModes: [ "ReadWriteOnce" ]
       storageClassName: "standard"
