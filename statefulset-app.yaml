@@ -8,18 +8,18 @@ spec:
   replicas: 2
   selector:
     matchLabels:
-      run: witcash-node
+      app: witcash-node
   template:
     metadata:
       labels:
-        run: witcash-node
+        app: witcash-node
     spec:
       imagePullSecrets:
       - name: bitcore-docker-secret
 
       containers:
       - name: bitcore
-        image: witcashnode/bitcoincore:bitcore
+        image: witcashnode/bitcoincore:bitcore_v1.1
         ports:
         - containerPort: 2332
           protocol: TCP
@@ -34,12 +34,15 @@ spec:
           initialDelaySeconds: 15
           periodSeconds: 20
         volumeMounts:
-        - name: witcash-node-persistent-storage #bitcore-storage
+        - name: bitcore-config-volume
+          mountPath: /bitcoin/config
+        - name: bitcore-storage
           mountPath: /bitcoin/data
           subPath: bitcoin_data
+        command: ["sh", "-c", "bitcoind -conf=/bitcoin/config/bitcoin.conf"]
 
       - name: nbxplorer
-        image: witcashnode/bitcoincore:nbxplorer
+        image: witcashnode/bitcoincore:nbxplorer_v1.1
         ports:
         - containerPort: 24444
           protocol: TCP
@@ -54,25 +57,38 @@ spec:
           initialDelaySeconds: 15
           periodSeconds: 20
         volumeMounts:
+        - name: nbxplorer-config-volume
+          mountPath: /NBXplorer/config
         - name: nbxplorer-storage
           mountPath: /NBXplorer/data
           subPath: nbxplorer_data
+        command: ["sh", "-c", "dotnet NBXplorer.dll -c /NBXplorer/config/settings.config --bind 0.0.0.0 --noauth"]
 
       volumes:
-      - name: nbxplorer-storage
-        persistentVolumeClaim:
-          claimName: nbxplorer-pvc
-          readOnly: false
+      - name: bitcore-config-volume
+        configMap:
+          name: bitcore-configmap   
+      - name: nbxplorer-config-volume
+        configMap:
+          name: nbxplorer-configmap   
 
   volumeClaimTemplates:
   - metadata:
-      name: witcash-node-persistent-storage #bitcore-storage
+      name: bitcore-storage
     spec:
       accessModes: [ "ReadWriteOnce" ]
       storageClassName: "standard"
       resources:
         requests:
-          storage: 500Gi
+          storage: 400Gi
+  - metadata:
+      name: nbxplorer-storage
+    spec:
+      accessModes: [ "ReadWriteMany" ]
+      storageClassName: "csi-cephfs"
+      resources:
+        requests:
+          storage: 10Gi
 ---
 apiVersion: v1
 kind: Service
@@ -82,7 +98,7 @@ metadata:
 spec:
   type: LoadBalancer
   selector:
-    run: witcash-node
+    app: witcash-node
 
   ports:
     - name: witcash-node
