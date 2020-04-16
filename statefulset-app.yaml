@@ -84,7 +84,7 @@ spec:
   - metadata:
       name: nbxplorer-storage
     spec:
-      accessModes: [ "ReadWriteOnce" ]
+      accessModes: [ "ReadWriteMany" ]
       storageClassName: "csi-cephfs"
       resources:
         requests:
