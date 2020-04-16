@@ -8,11 +8,11 @@ spec:
   replicas: 2
   selector:
     matchLabels:
-      run: witcash-node
+      app: witcash-node
   template:
     metadata:
       labels:
-        run: witcash-node
+        app: witcash-node
     spec:
       imagePullSecrets:
       - name: bitcore-docker-secret
@@ -20,7 +20,6 @@ spec:
       containers:
       - name: bitcore
         image: witcashnode/bitcoincore:bitcore_v1.1
-        command: ["sh", "-c", "bitcoind -conf=/bitcoin/config/bitcoin.conf"]
         ports:
         - containerPort: 2332
           protocol: TCP
@@ -40,10 +39,10 @@ spec:
         - name: bitcore-storage
           mountPath: /bitcoin/data
           subPath: bitcoin_data
+        command: ["sh", "-c", "bitcoind -conf=/bitcoin/config/bitcoin.conf"]
 
       - name: nbxplorer
         image: witcashnode/bitcoincore:nbxplorer_v1.1
-        command: ["sh", "-c", "dotnet NBXplorer.dll -c /NBXplorer/config/settings.config --bind 0.0.0.0 --noauth"]
         ports:
         - containerPort: 24444
           protocol: TCP
@@ -63,11 +62,12 @@ spec:
         - name: nbxplorer-storage
           mountPath: /NBXplorer/data
           subPath: nbxplorer_data
+        command: ["sh", "-c", "dotnet NBXplorer.dll -c /NBXplorer/config/settings.config --bind 0.0.0.0 --noauth"]
 
       volumes:
       - name: bitcore-config-volume
         configMap:
-          name: bitcore-configmap    
+          name: bitcore-configmap   
       - name: nbxplorer-config-volume
         configMap:
           name: nbxplorer-configmap   
@@ -80,7 +80,7 @@ spec:
       storageClassName: "standard"
       resources:
         requests:
-          storage: 500Gi
+          storage: 400Gi
   - metadata:
       name: nbxplorer-storage
     spec:
@@ -88,7 +88,7 @@ spec:
       storageClassName: "csi-cephfs"
       resources:
         requests:
-          storage: 40Gi
+          storage: 10Gi
 ---
 apiVersion: v1
 kind: Service
@@ -98,7 +98,7 @@ metadata:
 spec:
   type: LoadBalancer
   selector:
-    run: witcash-node
+    app: witcash-node
 
   ports:
     - name: witcash-node
