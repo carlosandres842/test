@@ -4,7 +4,7 @@ metadata:
   name: witcash-node
   namespace: witcash
 spec:
-  serviceName: witpay
+  serviceName: witcash-node
   replicas: 2
   selector:
     matchLabels:
@@ -14,9 +14,20 @@ spec:
       labels:
         app: witcash-node
     spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - witcash-node
+              topologyKey: failure-domain.beta.kubernetes.io/zone
+            weight: 100
       imagePullSecrets:
       - name: bitcore-docker-secret
-
       containers:
       - name: bitcore
         image: witcashnode/bitcoincore:bitcore_v1.1
