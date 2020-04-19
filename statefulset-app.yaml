@@ -26,11 +26,11 @@ spec:
                   - witcash-node
               topologyKey: failure-domain.beta.kubernetes.io/zone
             weight: 100
-      imagePullSecrets:
-      - name: bitcore-docker-secret
+      # imagePullSecrets:
+      # - name: bitcore-docker-secret
       containers:
       - name: bitcore
-        image: witcashnode/bitcoincore:bitcore_v1.1
+        image: gcr.io/k8switcash/bitcore:v1
         ports:
         - containerPort: 2332
           protocol: TCP
@@ -53,7 +53,7 @@ spec:
         command: ["sh", "-c", "bitcoind -conf=/bitcoin/config/bitcoin.conf"]
 
       - name: nbxplorer
-        image: witcashnode/bitcoincore:nbxplorer_v1.1
+        image: gcr.io/k8switcash/nbxplorer:v1
         ports:
         - containerPort: 24444
           protocol: TCP
@@ -99,7 +99,7 @@ spec:
       storageClassName: "csi-cephfs"
       resources:
         requests:
-          storage: 10Gi
+          storage: 40Gi
 ---
 apiVersion: v1
 kind: Service
