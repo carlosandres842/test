@@ -30,6 +30,7 @@ spec:
       # - name: bitcore-docker-secret
       containers:
       - name: bitcore
+        # image: gcr.io/landing-iqblock/bitcore:v1
         image: gcr.io/k8switcash/bitcore:v1
         ports:
         - containerPort: 2332
@@ -53,6 +54,7 @@ spec:
         command: ["sh", "-c", "bitcoind -conf=/bitcoin/config/bitcoin.conf"]
 
       - name: nbxplorer
+        # image: gcr.io/landing-iqblock/nbxplorer:v1
         image: gcr.io/k8switcash/nbxplorer:v1
         ports:
         - containerPort: 24444
@@ -95,11 +97,11 @@ spec:
   - metadata:
       name: nbxplorer-storage
     spec:
-      accessModes: [ "ReadWriteMany" ]
-      storageClassName: "csi-cephfs"
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: "regional"
       resources:
         requests:
-          storage: 40Gi
+          storage: 10Gi
 ---
 apiVersion: v1
 kind: Service
