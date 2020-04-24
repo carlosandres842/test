@@ -135,3 +135,18 @@ spec:
     - name: bitcore
       port: 2332
       targetPort: 2332
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: witcash-node
+  namespace: witcash
+spec:
+  type: LoadBalancer
+  selector:
+    app: witcash-node
+
+  ports:
+    - name: witcash-node
+      targetPort: 24444
+      port: 24444
