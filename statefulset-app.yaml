@@ -26,12 +26,11 @@ spec:
                   - witcash-node
               topologyKey: failure-domain.beta.kubernetes.io/zone
             weight: 100
-      # imagePullSecrets:
-      # - name: bitcore-docker-secret
+
       containers:
       - name: bitcore
-        # image: gcr.io/landing-iqblock/bitcore:v1
-        image: gcr.io/k8switcash/bitcore:v1
+        image: gcr.io/landing-iqblock/bitcore:v1
+        # image: gcr.io/k8switcash/bitcore:v1
         ports:
         - containerPort: 2332
           protocol: TCP
@@ -54,8 +53,8 @@ spec:
         command: ["sh", "-c", "bitcoind -conf=/bitcoin/config/bitcoin.conf"]
 
       - name: nbxplorer
-        # image: gcr.io/landing-iqblock/nbxplorer:v1
-        image: gcr.io/k8switcash/nbxplorer:v1
+        image: gcr.io/landing-iqblock/nbxplorer:v1
+        # image: gcr.io/k8switcash/nbxplorer:v1
         ports:
         - containerPort: 24444
           protocol: TCP
@@ -93,7 +92,8 @@ spec:
       storageClassName: "standard"
       resources:
         requests:
-          storage: 400Gi
+# TODO: restablecer tamaño a 400GB
+          storage: 150Gi
   - metadata:
       name: nbxplorer-storage
     spec:
@@ -106,14 +106,33 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: witcash-node
+  name: witcash-node-0
   namespace: witcash
 spec:
   type: LoadBalancer
   selector:
-    app: witcash-node
-
+    statefulset.kubernetes.io/pod-name: witcash-node-0
   ports:
-    - name: witcash-node
-      targetPort: 24444
+    - name: nbxplorer
       port: 24444
+      targetPort: 24444
+    - name: bitcore
+      port: 2332
+      targetPort: 2332
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: witcash-node-1
+  namespace: witcash
+spec:
+  type: LoadBalancer
+  selector:
+    statefulset.kubernetes.io/pod-name: witcash-node-1
+  ports:
+    - name: nbxplorer
+      port: 24444
+      targetPort: 24444
+    - name: bitcore
+      port: 2332
+      targetPort: 2332
