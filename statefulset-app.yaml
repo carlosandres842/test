@@ -29,8 +29,8 @@ spec:
 
       containers:
       - name: bitcore
-        image: gcr.io/landing-iqblock/bitcore:v1
-        # image: gcr.io/k8switcash/bitcore:v1
+        # image: gcr.io/landing-iqblock/bitcore:v1
+        image: gcr.io/k8switcash/bitcore:v1
         ports:
         - containerPort: 2332
           protocol: TCP
@@ -53,8 +53,8 @@ spec:
         command: ["sh", "-c", "bitcoind -conf=/bitcoin/config/bitcoin.conf"]
 
       - name: nbxplorer
-        image: gcr.io/landing-iqblock/nbxplorer:v1
-        # image: gcr.io/k8switcash/nbxplorer:v1
+        # image: gcr.io/landing-iqblock/nbxplorer:v1
+        image: gcr.io/k8switcash/nbxplorer:v1
         ports:
         - containerPort: 24444
           protocol: TCP
@@ -92,8 +92,7 @@ spec:
       storageClassName: "standard"
       resources:
         requests:
-# TODO: restablecer tamaño a 400GB
-          storage: 150Gi
+          storage: 400Gi
   - metadata:
       name: nbxplorer-storage
     spec:
