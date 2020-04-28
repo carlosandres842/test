@@ -1,11 +1,11 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 namespace: witcash
-configMapGenerator:
-- name: bitcore-configmap 
+secretGenerator:
+- name: bitcore-secret 
   files:
   - bitcoin.conf
-- name: nbxplorer-configmap
+- name: nbxplorer-secret
   files:
   - settings.config
 generatorOptions:

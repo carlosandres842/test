@@ -78,11 +78,11 @@ spec:
 
       volumes:
       - name: bitcore-config-volume
-        configMap:
-          name: bitcore-configmap   
+        secret:
+          secretName: bitcore-secret   
       - name: nbxplorer-config-volume
-        configMap:
-          name: nbxplorer-configmap   
+        secret:
+          secretName: nbxplorer-secret  
 
   volumeClaimTemplates:
   - metadata:
