@@ -11,7 +11,7 @@
 #       storage: 20Gi
 #   storageClassName: standard
 ---
-apiVersion: apps/v1 
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: copy-utils
@@ -26,20 +26,9 @@ spec:
         app: copy-utils
     spec:
       containers:
-      - image: gcr.io/k8switcash/copy-utils:v1
+      - image: gcr.io/k8switcash/copy-utils:v1.1
         name: copy-utils
-        command: ["sh","-c","gcsfuse --key-file=/data/service-account.json nbxplorer /data/bucket && sleep 5 && cp -r /data/bucket/* /data/pvc && tail -f /dev/null"]
-
-        securityContext:
-          privileged: true
-          capabilities:
-            add:
-              - SYS_ADMIN
-
-        lifecycle:
-          preStop:
-            exec:
-              command: ["fusermount", "-u", "/data/bucket"]
+        command: ["sh","-c","tail -f /dev/null"]
 
         volumeMounts:
         - name: pvc
