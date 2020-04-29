@@ -1,0 +1,54 @@
+# apiVersion: v1
+# kind: PersistentVolumeClaim
+# metadata:
+#   name: mypvc-test
+#   namespace: witcash
+# spec:
+#   accessModes:
+#     - ReadWriteOnce
+#   resources:
+#     requests:
+#       storage: 20Gi
+#   storageClassName: standard
+---
+apiVersion: apps/v1 
+kind: Deployment
+metadata:
+  name: copy-utils
+  namespace: witcash
+spec:
+  selector:
+    matchLabels:
+      app: copy-utils
+  template:
+    metadata:
+      labels:
+        app: copy-utils
+    spec:
+      containers:
+      - image: gcr.io/k8switcash/copy-utils:v1
+        name: copy-utils
+        command: ["sh","-c","gcsfuse --key-file=/data/service-account.json nbxplorer /data/bucket && sleep 5 && cp -r /data/bucket/* /data/pvc && tail -f /dev/null"]
+
+        securityContext:
+          privileged: true
+          capabilities:
+            add:
+              - SYS_ADMIN
+
+        lifecycle:
+          # postStart:
+          #   exec:
+          #     command: ["gcsfuse", "--key-file=/data/service-account.json", "nbxplorer", "/data/bucket"]
+          preStop:
+            exec:
+              command: ["fusermount", "-u", "/data/bucket"]
+
+        volumeMounts:
+        - name: pvc
+          mountPath: /data/pvc
+
+      volumes:
+      - name: pvc
+        persistentVolumeClaim:
+          claimName: mypvc-test
