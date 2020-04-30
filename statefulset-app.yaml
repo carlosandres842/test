@@ -26,8 +26,8 @@ spec:
                   - witcash-node
               topologyKey: failure-domain.beta.kubernetes.io/zone
             weight: 100
-      # nodeSelector:
-      #   node-group: first
+      nodeSelector:
+        node-group: first
       containers:
       - name: bitcore
         # image: gcr.io/landing-iqblock/bitcore:v1
@@ -38,7 +38,7 @@ spec:
         readinessProbe:
           tcpSocket:
             port: 2332
-          initialDelaySeconds: 5
+          initialDelaySeconds: 1
           periodSeconds: 10
         livenessProbe:
           tcpSocket:
@@ -62,7 +62,7 @@ spec:
         readinessProbe:
           tcpSocket:
             port: 24444
-          initialDelaySeconds: 15
+          initialDelaySeconds: 5
           periodSeconds: 10
         livenessProbe:
           tcpSocket:
