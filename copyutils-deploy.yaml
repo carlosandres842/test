@@ -37,4 +37,4 @@ spec:
       volumes:
       - name: pvc
         persistentVolumeClaim:
-          claimName: mypvc-test
+          claimName: nbxplorer-storage-witcash-node-1

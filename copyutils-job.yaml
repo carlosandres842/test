@@ -9,12 +9,13 @@ spec:
       containers:
       - image: gcr.io/k8switcash/copy-utils:v1.1
         name: copy-utils
-        command: ["sh","-c","gsutil -m cp -r gs://nbxplorer/* /data/pvc"]
+        command: ["sh","-c","rm -Rf /data/pvc/* && gsutil -m cp -rv gs://nbxplorer/* /data/pvc"]
         volumeMounts:
         - name: pvc
           mountPath: /data/pvc
+          subPath: nbxplorer_data
       restartPolicy: Never
       volumes:
       - name: pvc
         persistentVolumeClaim:
-          claimName: mypvc-test
+          claimName: nbxplorer-storage-witcash-node-1

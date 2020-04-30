@@ -26,7 +26,8 @@ spec:
                   - witcash-node
               topologyKey: failure-domain.beta.kubernetes.io/zone
             weight: 100
-
+      # nodeSelector:
+      #   node-group: first
       containers:
       - name: bitcore
         # image: gcr.io/landing-iqblock/bitcore:v1
@@ -61,12 +62,12 @@ spec:
         readinessProbe:
           tcpSocket:
             port: 24444
-          initialDelaySeconds: 5
+          initialDelaySeconds: 15
           periodSeconds: 10
         livenessProbe:
           tcpSocket:
             port: 24444
-          initialDelaySeconds: 15
+          initialDelaySeconds: 20
           periodSeconds: 20
         volumeMounts:
         - name: nbxplorer-config-volume
@@ -109,6 +110,7 @@ metadata:
   namespace: witcash
 spec:
   type: LoadBalancer
+  loadBalancerIP: 35.203.107.76
   selector:
     statefulset.kubernetes.io/pod-name: witcash-node-0
   ports:
@@ -126,6 +128,7 @@ metadata:
   namespace: witcash
 spec:
   type: LoadBalancer
+  loadBalancerIP: 35.203.18.34
   selector:
     statefulset.kubernetes.io/pod-name: witcash-node-1
   ports:
@@ -143,6 +146,7 @@ metadata:
   namespace: witcash
 spec:
   type: LoadBalancer
+  loadBalancerIP: 35.203.114.76
   selector:
     app: witcash-node
 
